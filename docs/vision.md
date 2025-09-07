@@ -1,154 +1,222 @@
-# Technical Vision - LLM Assistant Telegram Bot
+# Техническое видение проекта
 
-## 1. Technologies
+## 1. Технологии
 
-### Core Stack
-- **Python**: 3.11+
-- **Bot Framework**: aiogram (async Telegram bot framework)
-- **LLM Integration**: OpenRouter API via OpenAI client
-- **Dependency Management**: uv
-- **Testing**: pytest
-- **Automation**: make
-- **Deployment**: Docker
+**Backend:**
+- **Python 3.11+** - основной язык разработки
+- **aiogram** - библиотека для работы с Telegram Bot API
+- **openai** - клиент для работы с OpenRouter API
+- **pytest** - тестирование
+- **uv** - управление зависимостями
 
-### Key Dependencies
-- `aiogram` - Telegram Bot API framework
-- `openai` - OpenAI client library (for OpenRouter compatibility)
-- `pytest` - Testing framework
-- `python-dotenv` - Environment variables management
+**Инфраструктура:**
+- **Docker** - контейнеризация
+- **Make** - автоматизация задач
 
-### Infrastructure
-- **Data Storage**: In-memory structures (dict/list) - no database required
-- **Configuration**: Environment variables + config files
-- **Containerization**: Docker for deployment
-- **Knowledge Base**: Embedded in system prompts
+**Логирование:**
+- **Python logging** - простое логирование в файлы
 
----
+## 2. Принципы разработки
 
-## 2. Development Principles
+1. **KISS (Keep It Simple Stupid)** - максимальная простота решения
+2. **Итеративный подход** - начинаем с MVP и постепенно добавляем функциональность
+3. **Чистый код** - понятные имена, комментарии, документация
+4. **Быстрые итерации** - возможность быстро вносить изменения и тестировать
+5. **Модульность** - разделение кода на логические компоненты
+6. **Единственная ответственность** - каждый модуль решает одну задачу
+7. **Конфигурация через переменные окружения** - все настройки в .env
+8. **Fail-fast** - быстрое обнаружение ошибок
+9. **Stateless** - бот не хранит состояние между перезапусками
 
-### KISS Approach
-- **Minimalism**: Only necessary functionality, no over-engineering
-- **Iterative Development**: Start with MVP, gradually add features
-- **Fast Iterations**: Quick changes and testing capability
+## 3. Структура проекта
 
-### Code Quality
-- **Clean Code**: Clear naming, comments, documentation
-- **Code Formatting**: Black for consistent formatting
-- **Modular Structure**: Logical separation into components
-- **Simple Error Handling**: Basic try/except blocks
-
-### Configuration Management
-- **Environment Variables**: All settings via .env file
-- **No Complex Config**: Simple key-value pairs
-- **Development Focus**: Easy local development setup
-
-### Development Workflow
-- **Sync Code**: No async/await unless absolutely necessary
-- **Direct Implementation**: Straightforward logic without abstractions
-- **Minimal Dependencies**: Only essential packages
-- **Quick Feedback**: Fast testing and validation cycles
-
----
-
-## 3. Project Structure
-
-### Directory Organization
 ```
-llmstart_project1/
+llmstart_project1-1/
 ├── src/
 │   ├── bot/
 │   │   ├── __init__.py
-│   │   ├── handlers.py      # Telegram message handlers
-│   │   ├── middleware.py    # Optional middleware
-│   │   └── bot.py          # Bot initialization
+│   │   ├── handlers.py        # Обработчики сообщений
+│   │   ├── middlewares.py     # Middleware для бота
+│   │   └── utils.py          # Утилиты бота
 │   ├── llm/
 │   │   ├── __init__.py
-│   │   ├── client.py       # OpenRouter client
-│   │   └── prompts.py      # System prompts & knowledge base
-│   ├── config.py           # Configuration management
-│   └── main.py             # Application entry point
-├── tests/                  # All tests flat structure
-│   ├── test_bot.py
-│   ├── test_llm.py
-│   └── test_config.py
+│   │   └── client.py         # Клиент для OpenRouter
+│   ├── config.py             # Настройки приложения
+│   └── main.py              # Точка входа
+├── tests/
 ├── docs/
+│   ├── product_idea.md
+│   └── vision.md
 ├── .env.example
-├── .env                    # Local environment variables
-├── requirements.txt        # Will be managed by uv
+├── .gitignore
 ├── Dockerfile
-├── Makefile                # Automation scripts
+├── Makefile
+├── pyproject.toml
+├── requirements.txt
 └── README.md
 ```
 
-### File Naming Conventions
-- **snake_case** for all Python files and directories
-- **Descriptive names** reflecting functionality
-- **Short but clear** module names
+## 4. Архитектура проекта
 
-### Module Responsibilities
-- `src/main.py`: Application entry point and startup
-- `src/bot/`: Telegram bot logic and handlers
-- `src/llm/`: LLM integration and knowledge base
-- `src/config.py`: Environment and configuration management
-- `tests/`: Flat structure with all test files
-
----
-
-## 4. Project Architecture
-
-### System Layers
-```mermaid
-graph TB
-    User[Telegram User] --> TelegramAPI[Telegram Bot API]
-    TelegramAPI --> InterfaceLayer[Telegram Interface Layer]
-    InterfaceLayer --> BusinessLogic[Business Logic Layer]
-    BusinessLogic --> LLMLayer[LLM Processing Layer]
-    LLMLayer --> OpenRouter[OpenRouter API]
-    LLMLayer --> KnowledgeBase[Knowledge Base Layer]
+```
+┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
+│   Telegram      │    │   Bot Handler   │    │   LLM Client    │
+│   User          │◄──►│   (aiogram)     │◄──►│   (OpenRouter)  │
+└─────────────────┘    └─────────────────┘    └─────────────────┘
+                                │
+                                ▼
+                       ┌─────────────────┐
+                       │   Config        │
+                       │   (.env)        │
+                       └─────────────────┘
 ```
 
-### Architecture Components
+**Компоненты:**
+- **Bot Handler** - обработка сообщений от пользователей
+- **LLM Client** - взаимодействие с OpenRouter API
+- **Config** - управление настройками через переменные окружения
 
-#### 1. Telegram Interface Layer
-- Handles incoming webhooks from Telegram
-- Message parsing and validation
-- Response formatting and sending
-- Located in: `src/bot/handlers.py`
+**Обработка ошибок:**
+- Использование try/catch для обработки исключений
+- Уведомление пользователей об ошибках через Telegram
 
-#### 2. Business Logic Layer
-- Conversation flow management
-- User state tracking (per chat_id)
-- Decision making for response routing
-- Located in: `src/bot/bot.py`
+## 5. Модель данных
 
-#### 3. LLM Processing Layer
-- OpenRouter API integration
-- Prompt construction and management
-- Response processing
-- Located in: `src/llm/client.py`
+**Структуры данных в памяти:**
+- **Диалог с пользователем** - список сообщений в формате:
+  ```python
+  {
+      "user_id": int,
+      "messages": [
+          {"role": "system", "content": "системное сообщение", "timestamp": datetime},
+          {"role": "user", "content": "текст сообщения", "timestamp": datetime},
+          {"role": "assistant", "content": "ответ бота", "timestamp": datetime}
+      ]
+  }
+  ```
 
-#### 4. Knowledge Base Layer
-- Static company information
-- Service descriptions and mappings
-- System prompts
-- Located in: `src/llm/prompts.py`
+**Конфигурация (переменные окружения):**
+- `TELEGRAM_BOT_TOKEN` - токен бота
+- `OPENROUTER_API_KEY` - ключ для OpenRouter
+- `OPENROUTER_API_URL` - URL для OpenRouter API (по умолчанию https://openrouter.ai/api/v1)
+- `LLM_MODEL_NAME` - название модели LLM (например, openai/gpt-3.5-turbo)
+- `LLM_TEMPERATURE` - температура для генерации (по умолчанию 0.7)
+- `LLM_MAX_TOKENS` - максимальное количество токенов в ответе (по умолчанию 500)
+- `SYSTEM_PROMPT` - системный промпт с информацией о компании
+- `MAX_CONTEXT_TOKENS` - максимальный размер контекста (по умолчанию 2000)
+- `LOG_LEVEL` - уровень логирования
 
-### Data Flow
-1. **User Input**: Message received via Telegram API
-2. **Parsing**: Extract text and chat_id
-3. **State Check**: Retrieve conversation history for chat_id
-4. **LLM Processing**: Send context + message to OpenRouter
-5. **Response**: Return formatted response to user
-6. **State Update**: Store message in conversation history
+## 6. Работа с LLM
 
-### State Management
-- **In-Memory Storage**: Simple Python dictionaries
-- **Key Structure**: `chat_id -> [message_history]`
-- **No Persistence**: Data lost on restart (acceptable for MVP)
+**Интеграция с OpenRouter:**
+- Использование OpenAI клиента для работы с OpenRouter API
+- Передача истории диалога в формате messages
+- Обработка ошибок API (rate limits, недоступность сервиса)
 
-### Error Handling
-- **Graceful Degradation**: Generic helpful message on LLM failure
-- **Retry Logic**: 3 attempts with exponential backoff for API calls
-- **User Notification**: Clear error messages without technical details
-- **Fallback Responses**: Pre-defined responses for common scenarios
+**Промпт-инжиниринг:**
+- Системный промпт с информацией о компании и услугах
+- Контекст диалога для поддержания разговора
+- Обработка различных типов запросов клиентов
+
+**Настройки LLM:**
+- Максимальный размер контекста: 2k токенов (настраивается через переменную окружения `MAX_CONTEXT_TOKENS`)
+- Прямые ответы согласно указаниям из промпта
+- Логирование запросов и ответов LLM для отладки
+
+**Обработка команд:**
+- `/start` - приветствие и описание возможностей бота
+- `/help` - справка по использованию бота
+
+## 7. Мониторинг
+
+**Логирование:**
+- Простое файловое логирование без ротации по времени
+- Разные уровни логирования (DEBUG, INFO, WARNING, ERROR)
+- Логирование всех взаимодействий с пользователями
+- Логирование запросов и ответов LLM
+
+**Обработка ошибок:**
+- Уведомления пользователей об ошибках через Telegram
+- Логирование всех ошибок в файлы
+
+## 8. Сценарии работы
+
+**Сценарий 1: Первое знакомство**
+1. Пользователь отправляет `/start`
+2. Бот приветствует и объясняет свои возможности
+3. Пользователь задает вопрос о услугах компании
+4. Бот анализирует запрос и дает релевантный ответ
+
+**Сценарий 2: Консультация**
+1. Пользователь описывает свою проблему
+2. Бот задает уточняющие вопросы
+3. Бот предлагает подходящие услуги компании
+4. При необходимости направляет к специалисту
+
+**Сценарий 3: Обработка ошибок**
+1. Возникает ошибка (API недоступен, превышен лимит токенов)
+2. Бот уведомляет пользователя об ошибке
+3. Ошибка логируется в файл
+
+**Сценарий 4: Обработка входящих сообщений**
+1. Пользователь отправляет сообщение
+2. Бот проверяет тип сообщения (только текстовые)
+3. Нетекстовые данные игнорируются
+4. Текстовые сообщения обрабатываются согласно промпту
+
+## 9. Деплой
+
+**Контейнеризация:**
+- Dockerfile для создания образа приложения
+- Использование Python 3.11 slim образа
+- Копирование кода и установка зависимостей
+
+**Переменные окружения:**
+- Все настройки через .env файл
+- .env.example как шаблон для настройки
+
+**Makefile:**
+- Команды для сборки, запуска и тестирования
+- Упрощение процесса разработки
+
+**Локальное развертывание:**
+- Развертывание на локальной машине
+- Запуск через Docker контейнер
+- Простая настройка через .env файл
+
+## 10. Подход к конфигурированию
+
+**Конфигурация через переменные окружения:**
+- Все настройки в .env файле
+- .env.example как шаблон с примерами значений
+- Валидация обязательных переменных при запуске
+
+**Структура конфигурации:**
+- `config.py` - загрузка и валидация настроек
+- Использование библиотеки `python-dotenv` для работы с .env
+- Значения по умолчанию для необязательных параметров
+- Валидация типов данных для переменных окружения
+
+## 11. Подход к логгированию
+
+**Структура логирования:**
+- Использование стандартной библиотеки `logging`
+- Разные уровни: DEBUG, INFO, WARNING, ERROR
+- Логирование в один файл с настраиваемым форматом
+
+**Что логировать:**
+- Все входящие сообщения от пользователей
+- Запросы и ответы LLM
+- Ошибки и исключения
+- Запуск и остановка приложения
+
+**Формат логов:**
+- Временная метка в формате ISO 8601
+- Уровень логирования
+- Модуль/функция
+- Сообщение
+
+**Пример формата:**
+```
+2024-01-15T10:30:45.123Z INFO bot.handlers:message_handler - Получено сообщение от пользователя 12345
+```
