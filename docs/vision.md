@@ -41,7 +41,7 @@ llmstart_project1-1/
 │   │   ├── __init__.py
 │   │   └── client.py         # Клиент для OpenRouter
 │   ├── config.py             # Настройки приложения
-│   └── main.py              # Точка входа
+│   └── bot.py              # Точка входа
 ├── tests/
 │   └── test_bot.py          # Базовые тесты бота (pytest)
 ├── docs/
@@ -73,7 +73,7 @@ llmstart_project1-1/
 
 **Компоненты:**
 
-- `src/main.py` — точка входа
+- `src/bot.py` — точка входа
   - Инициализация приложения и Telegram-бота (aiogram)
   - Регистрация обработчиков из `src/bot/handlers.py`
   - Запуск polling (или webhook в будущем)
