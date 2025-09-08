@@ -1,3 +1,4 @@
+
 # Техническое видение проекта
 
 ## 1. Технологии
@@ -35,24 +36,23 @@ llmstart_project1-1/
 ├── src/
 │   ├── bot/
 │   │   ├── __init__.py
-│   │   ├── handlers.py        # Обработчики сообщений
-│   │   ├── middlewares.py     # Middleware для бота
-│   │   └── utils.py          # Утилиты бота
+│   │   └── handlers.py        # Обработчики сообщений
 │   ├── llm/
 │   │   ├── __init__.py
 │   │   └── client.py         # Клиент для OpenRouter
 │   ├── config.py             # Настройки приложения
 │   └── main.py              # Точка входа
 ├── tests/
+│   └── test_bot.py          # Базовые тесты бота (pytest)
 ├── docs/
 │   ├── product_idea.md
 │   └── vision.md
+├── .venv/                   # Локальное виртуальное окружение
 ├── .env.example
 ├── .gitignore
 ├── Dockerfile
 ├── Makefile
 ├── pyproject.toml
-├── requirements.txt
 └── README.md
 ```
 
