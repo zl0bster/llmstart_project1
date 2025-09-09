@@ -10,3 +10,4 @@ def test_bot_module_imports():
 def test_placeholder_bot_behavior():
     # TODO: replace with real tests when bot modules appear (see @vision.md)
     assert 1 + 1 == 2
+
