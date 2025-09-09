@@ -25,7 +25,10 @@ def get_config():
         'OPENROUTER_API_URL': os.getenv('OPENROUTER_API_URL', 'https://openrouter.ai/api/v1'),
         'LLM_MODEL_NAME': os.getenv('LLM_MODEL_NAME', 'openai/gpt-3.5-turbo'),
         'LLM_TEMPERATURE': float(os.getenv('LLM_TEMPERATURE', '0.7')),
-        'LLM_MAX_TOKENS': int(os.getenv('LLM_MAX_TOKENS', '500'))
+        'LLM_MAX_TOKENS': int(os.getenv('LLM_MAX_TOKENS', '500')),
+        # История диалогов
+        'SYSTEM_PROMPT': os.getenv('SYSTEM_PROMPT', 'Ты полезный ИИ-помощник. Отвечай кратко и по делу.'),
+        'HISTORY_MAX_TURNS': int(os.getenv('HISTORY_MAX_TURNS', '5'))
     }
     
     # Валидация обязательных параметров
