@@ -8,7 +8,6 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 # Копирование исходного кода
 COPY src/ ./src/
-COPY .env .
 
 # Создание директорий для логов и данных
 RUN mkdir -p logs data
