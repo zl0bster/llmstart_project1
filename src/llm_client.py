@@ -3,6 +3,8 @@
 """
 import openai
 import logging
+import os
+import hashlib
 from typing import Optional, List, Dict
 from config import get_config
 
@@ -23,10 +25,33 @@ class LLMClient:
         self.model = config['LLM_MODEL_NAME']
         self.temperature = config['LLM_TEMPERATURE']
         self.max_tokens = config['LLM_MAX_TOKENS']
-        self.system_prompt = config['SYSTEM_PROMPT']
         self.history_max_turns = config['HISTORY_MAX_TURNS']
         
-        logger.info(f"LLM клиент инициализирован: модель {self.model}, системный промт: {self.system_prompt[:50]}...")
+        # Загружаем системный промт из файла
+        self.system_prompt = self._load_system_prompt()
+        
+        logger.info(f"LLM клиент инициализирован: модель {self.model}")
+    
+    def _load_system_prompt(self) -> str:
+        """Загружает системный промт из файла."""
+        prompt_path = os.getenv('SYSTEM_PROMPT_PATH', 'docs/system_prompt.md')
+        
+        try:
+            with open(prompt_path, 'r', encoding='utf-8') as f:
+                content = f.read()
+                
+            # Логируем факт загрузки
+            content_hash = hashlib.md5(content.encode()).hexdigest()[:8]
+            logger.info(f"Загружен системный промт из {prompt_path}, длина: {len(content)} символов, хеш: {content_hash}")
+            
+            return content
+            
+        except FileNotFoundError:
+            logger.error(f"Файл системного промта не найден: {prompt_path}")
+            return "Ты - полезный помощник."
+        except Exception as e:
+            logger.error(f"Ошибка загрузки системного промта: {e}")
+            return "Ты - полезный помощник."
     
     async def ask(self, question: str, history: List[Dict] = None) -> Optional[str]:
         """

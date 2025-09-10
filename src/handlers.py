@@ -32,9 +32,28 @@ def register_handlers(dp):
 
 @router.message(Command("start"))
 async def start_handler(message: types.Message):
-    """Обработчик команды /start."""
-    await message.reply("Привет! Я ИИ-помощник. Задай мне любой вопрос!")
-    logger.info(f"Пользователь {message.from_user.id} запустил бота")
+    """Обработчик команды /start - сценарий 1: Первое знакомство."""
+    chat_id = message.chat.id
+    user_id = message.from_user.id
+    
+    logger.info(f"Пользователь {user_id} запустил бота")
+    
+    # Генерируем персонализированное приветствие через LLM
+    welcome_prompt = "Пользователь только что запустил бота. Представься как консультант компании, объясни свои возможности и предложи помощь в выборе услуг. Будь дружелюбным и профессиональным."
+    
+    # Получаем историю диалога (пустая для нового пользователя)
+    history = chat_history.get(chat_id, [])
+    
+    # Генерируем приветствие через LLM
+    welcome_message = await llm_client.ask(welcome_prompt, history)
+    
+    if welcome_message:
+        await message.reply(welcome_message)
+        logger.info(f"Отправлено приветствие пользователю {user_id}")
+    else:
+        # Fallback на статичное сообщение
+        await message.reply("Привет! Я ИИ-консультант компании ТехноСервис. Помогу вам с выбором IT-услуг. Задайте мне любой вопрос!")
+        logger.error(f"Ошибка генерации приветствия для пользователя {user_id}")
 
 
 @router.message(Command("help"))
